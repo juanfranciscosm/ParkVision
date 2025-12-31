@@ -32,7 +32,7 @@ Thumbs.db
 # ================================
 # Project outputs
 # ================================
-results/
+# results/
 
 # ================================
 # Database files (LOCAL ONLY)
@@ -40,18 +40,19 @@ results/
 data/database/*.db
 data/database/*.sqlite
 data/database/*.sqlite3
+data/database/*.json
 
 # ================================
 # Media files (raw videos)
 # ================================
-media/*.mp4
-media/*.avi
+# media/*.mp4
+# media/*.avi
 
 # ================================
 # Temporary / testing scripts
 # ================================
-consultadb_test.py
-gpu_use_test.py
+# consultadb_test.py
+# gpu_use_test.py
 
 # ================================
 # Optional: Model weights
