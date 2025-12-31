@@ -1,6 +1,6 @@
 # ParkVision
 
-![Preview del sistema](results/parking_iou.avi)
+![Preview del sistema](media/ejemplo.png)
 
 Sistema inteligente de monitoreo de estacionamientos basado en **visión por computadora**, diseñado para detectar en tiempo real la ocupación de plazas, registrar sesiones de uso y generar información lista para analítica y dashboards administrativos.
 
