@@ -122,7 +122,7 @@ pip install uv
 ### 1. Activar entorno virtual
 
 ```powershell
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/juanfranciscosm/ParkVision.git
 cd ParkVision
 ```
 
