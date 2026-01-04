@@ -50,10 +50,18 @@ ParkVision/
 │   │   ├── init_db.py          # Inicialización de la BD
 │   │   └── models.py           # Operaciones CRUD
 │   │
-│   └── vision/
-│       ├── detectionVideoReal.py  # Detección y lógica principal (aqui se procesa video de estacionamiento y actualiza la base de datos)
-│       └── boxes.py               # Script para iniciar interfaz gráfica para generar bounding_boxes.json
-│
+│   ├── vision/
+│   │   ├── detectionVideoReal.py  # Detección y lógica principal (aqui se procesa video de estacionamiento y actualiza la base de datos)
+│   │   └── boxes.py               # Script para iniciar interfaz gráfica para generar bounding_boxes.json
+│   │
+│   └── server/
+│       ├── main.py          # Punto de entrada FastAPI
+│       └── routes/
+│           ├── parking.py   # Endpoints de parqueaderos
+│           ├── spots.py     # Estado de plazas
+│           ├── stats.py     # Analítica básica
+│           └── reservations.py
+│       
 ├── media/                       
 │   ├── primer_frame.jpg         # Primer frame utilizado para generar datos de las coordenadas de las plazas (bounding_boxes.json) 
 │   └── Park_final.mp4           # Video de prueba de estacionamiento  
