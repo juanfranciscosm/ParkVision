@@ -39,9 +39,9 @@ ParkVision/
 │
 ├── data/
 │   ├── database/
-│   │   ├── test_parking.db     # Base de datos SQLite (se genera al inciar la base de datos)
-│   │   ├── test_schema.sql     # Estructura de la base de datos
-|   |   └── test_seed.sql       # Datos iniciales de las plazas del video de prueba
+│   │   ├── parking.db     # Base de datos SQLite (se genera al inciar la base de datos)
+│   │   ├── schema.sql     # Estructura de la base de datos
+|   |   └── test_seed.sql  # Datos iniciales en base a las plazas del video de prueba + datos inventados para pruebas
 │   └── bounding_boxes.json     # Polígonos de plazas
 │
 ├── src/
@@ -345,30 +345,117 @@ python .\gpu_use_test.py
 
 ---
 
-## 🧪 Validación
+## 🌐 Servidor Backend (API)
 
-El sistema fue validado comprobando que:
+ParkVision incluye un servidor backend desarrollado con FastAPI, encargado de exponer la información del sistema de estacionamiento en tiempo real para su consumo por aplicaciones frontend (dashboard web, apps móviles, etc.).
 
-* No se generan múltiples sesiones por una misma ocupación.
-* No hay cambios de estado por ruido de uno o pocos frames.
-* Las sesiones reflejan tiempos reales de permanencia.
+El servidor lee el estado actual desde la base de datos SQLite, la cual es actualizada continuamente por el módulo de visión por computadora.
 
----
+### 🧱 Arquitectura del Servidor
 
-## 🔜 Próximas extensiones (no implementadas aún)
+* Framework: FastAPI
+* Servidor ASGI: Uvicorn
+* Base de datos: SQLite (modo WAL)
+* Patrón: API REST
+* Concurrencia: 
+  * Escritura → módulo de visión
+  * Lectura → servidor API
 
-* Estados avanzados (`RESERVADO`)
-* Sistema de reservas con QR
-* API REST (FastAPI)
-* Dashboard web en tiempo real
-* Integración con ESP32 (LEDs / señalización)
-* Analítica avanzada y mapas de calor
+Cada request HTTP abre su propia conexión segura a la base de datos.
 
----
+### 🚀 Cómo iniciar el servidor
 
-## 👨‍💻 Autor
+#### 1️⃣ Activar el entorno virtual
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
 
-Proyecto desarrollado como sistema académico y base para expansión a solución inteligente de estacionamientos.
+#### 2️⃣ Iniciar el servidor FastAPI
+
+Desde la raíz del proyecto:
+```powershell
+uvicorn src.server.main:app --reload
+```
+
+Salida esperada:
+```powershell
+Uvicorn running on http://127.0.0.1:8000
+Application startup complete.
+```
+
+#### 3️⃣ Ver documentación automática
+
+FastAPI genera documentación automáticamente:
+
+Swagger UI:
+👉 http://127.0.0.1:8000/docs
+
+Redoc:
+👉 http://127.0.0.1:8000/redoc
+
+### 📡 Endpoints disponibles
+
+#### Estado de las plazas
+
+GET /spots/
+
+Respuesta:
+```json
+[
+  {
+    "id": 1,
+    "code": "A1",
+    "status": "FREE",
+    "updated_at": "2026-01-04 20:31:10"
+  }
+]
+```
+
+#### Estado de una plaza específica
+
+GET /spots/{spot_id}
+
+Ejemplo:
+GET /spots/3
+
+#### Reservas activas
+
+GET /reservations/
+
+#### Estadísticas de ocupación
+
+GET /stats/occupancy
+
+Ejemplo de respuesta:
+```json
+{
+  "total_spots": 20,
+  "occupied": 8,
+  "free": 12,
+  "occupancy_rate": 0.4
+}
+```
+
+### 🖥️ Uso desde el Frontend
+
+El frontend NO se conecta directamente a la base de datos. Toda la información se obtiene exclusivamente a través del servidor API.
+
+#### Ejemplo con JavaScript (Fetch API)
+```javascript
+fetch("http://127.0.0.1:8000/spots/")
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+  });
+```
+
+### Uso recomendado en frontend
+
+-> Actualizar cada 2–5 segundos (polling) O usar WebSockets (futuro)
+
+-> No mantener conexiones largas.
+
+-> Tratar la API como fuente única de verdad
 
 ---
 

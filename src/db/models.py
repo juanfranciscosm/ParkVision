@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from src.db.db import get_connection
+from src.db.db import get_vision_connection
 
 
 
@@ -8,7 +8,7 @@ from src.db.db import get_connection
 # ESTADO ACTUAL DE UNA PLAZA
 # --------------------------------------------------
 def get_estado(spot_id: int) -> str | None:
-    conn = get_connection()
+    conn = get_vision_connection()
     cur = conn.cursor()
 
     cur.execute(
@@ -26,7 +26,7 @@ def update_estado(spot_id: int, nuevo_estado: str):
     """
     nuevo_estado: FREE | RESERVED | OCCUPIED
     """
-    conn = get_connection()
+    conn = get_vision_connection()
     cur = conn.cursor()
 
     cur.execute(
@@ -48,7 +48,7 @@ def iniciar_sesion(spot_id: int, source: str = "VISION"):
     """
     Inicia sesión SOLO si no existe una abierta
     """
-    conn = get_connection()
+    conn = get_vision_connection()
     cur = conn.cursor()
 
     # ¿ya existe sesión abierta?
@@ -78,7 +78,7 @@ def cerrar_sesion(spot_id: int):
     """
     Cierra la sesión activa y calcula duración
     """
-    conn = get_connection()
+    conn = get_vision_connection()
     cur = conn.cursor()
 
     cur.execute(
@@ -113,7 +113,7 @@ def cerrar_sesion(spot_id: int):
 # EVENTOS (AUDITORÍA)
 # --------------------------------------------------
 def registrar_evento(spot_id, event_type, metadata=None):
-    conn = get_connection()
+    conn = get_vision_connection()
     cur = conn.cursor()
 
     cur.execute(
@@ -130,7 +130,7 @@ def registrar_evento(spot_id, event_type, metadata=None):
 # RESERVAS (base)
 # --------------------------------------------------
 def crear_reserva(spot_id: int, driver_id: int, qr_code: str, expires_at: datetime):
-    conn = get_connection()
+    conn = get_vision_connection()
     cur = conn.cursor()
 
     cur.execute(
@@ -151,7 +151,7 @@ def crear_reserva(spot_id: int, driver_id: int, qr_code: str, expires_at: dateti
 
 
 def confirmar_reserva(qr_code: str):
-    conn = get_connection()
+    conn = get_vision_connection()
     cur = conn.cursor()
 
     cur.execute(
@@ -183,7 +183,7 @@ def confirmar_reserva(qr_code: str):
 # CONSULTAS ANALÍTICAS (ejemplos)
 # --------------------------------------------------
 def plazas_ocupadas(parking_id: int) -> int:
-    conn = get_connection()
+    conn = get_vision_connection()
     cur = conn.cursor()
 
     cur.execute(
@@ -203,7 +203,7 @@ def plazas_ocupadas(parking_id: int) -> int:
 
 
 def tiempo_promedio_por_plaza(spot_id: int) -> float:
-    conn = get_connection()
+    conn = get_vision_connection()
     cur = conn.cursor()
 
     cur.execute(
