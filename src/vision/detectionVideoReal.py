@@ -5,6 +5,7 @@ from ultralytics import YOLO
 from shapely.geometry import Polygon
 import numpy as np
 from pathlib import Path
+
 from src.db.models import (
     get_estado,
     update_estado,
@@ -13,10 +14,10 @@ from src.db.models import (
 )
 
 # ---------------- CONFIGURACIÓN ----------------
-VIDEO_PATH = Path("media\\Park_final.mp4")
-OUTPUT_PATH = Path("results\\parking_iou.avi")
-MODEL_PATH = Path("modelos\\best.pt")
-JSON_PATH = Path("data\\bounding_boxes.json")
+VIDEO_PATH = Path("media/Park_final.mp4")
+OUTPUT_PATH = Path("results/parking_iou.avi")
+MODEL_PATH = Path("modelos/best.pt")
+JSON_PATH = Path("data/bounding_boxes.json")
 
 IOU_THRESHOLD = 0.12
 FRAMES_OCUPADO = 15
@@ -40,16 +41,16 @@ plazas = {idx: Polygon(p["points"]) for idx, p in enumerate(plazas_json)}
 # ------------------------------------------------
 
 
-# ---------------- ESTADO POR PLAZA ----------------
-estado = {
-    pid: {
-        "ocupado": bool(get_estado(pid)),   # sincronizado con DB
+# ---------------- ESTADO INICIAL (DESDE DB) ----------------
+estado = {}
+for pid in plazas.keys():
+    status_db = get_estado(pid)  # FREE / RESERVED / OCCUPIED
+    estado[pid] = {
+        "ocupado": status_db == "OCCUPIED",
         "frames_ocupado": 0,
         "frames_libre": 0
     }
-    for pid in plazas.keys()
-}
-# ------------------------------------------------
+# -----------------------------------------------------------
 
 
 # ---------------- MODELO YOLO ----------------
@@ -107,7 +108,7 @@ while cap.isOpened():
             for veh in vehiculos
         )
 
-        # -------- LÓGICA TEMPORAL CORRECTA --------
+        # -------- LÓGICA TEMPORAL --------
         if ocupado_ahora:
             estado[pid]["frames_ocupado"] += 1
             estado[pid]["frames_libre"] = 0
@@ -117,7 +118,7 @@ while cap.isOpened():
                 and not estado[pid]["ocupado"]
             ):
                 estado[pid]["ocupado"] = True
-                update_estado(pid, True)
+                update_estado(pid, "OCCUPIED")
                 iniciar_sesion(pid)
                 print(f"🟢 Plaza {pid} OCUPADA (confirmada)")
 
@@ -130,7 +131,7 @@ while cap.isOpened():
                 and estado[pid]["ocupado"]
             ):
                 estado[pid]["ocupado"] = False
-                update_estado(pid, False)
+                update_estado(pid, "FREE")
                 cerrar_sesion(pid)
                 print(f"🔵 Plaza {pid} LIBRE (confirmada)")
 

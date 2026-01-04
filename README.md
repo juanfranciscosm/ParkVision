@@ -132,10 +132,11 @@ cd ParkVision
 uv venv
 ```
 
-### 3. Activar entorno virtual
+### 3. Activar entorno virtual e instalar dependepcias
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
+uv sync
 ```
 Si PowerShell bloquea scripts, ejecutar una sola vez:
 
@@ -143,19 +144,59 @@ Si PowerShell bloquea scripts, ejecutar una sola vez:
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
 
-### 4. Inicializar base de datos
+
+#### 4. Instalar dependencias base del proyecto
+
+```powershell
+uv sync
+```
+
+
+### 5. Inicializar base de datos
 
 ```powershell
 uv run ./src/db/init_db.py
 ```
 
-### 3. Ejecutar detección 
+### 6. Ejecutar detección 
 
 ```powershell
 python -m src.vision.detectionVideoReal
 ```
 
 ⚠️ **No ejecutar como script suelto**, siempre como módulo (`-m`).
+
+---
+
+## 🚀 Activación de GPU (CUDA) para procesamiento por visión
+
+ParkVision puede aprovechar aceleración por GPU (CUDA) para el módulo de visión artificial basado en PyTorch + YOLO (Ultralytics).
+
+A continuación se muestra la **secuencia exacta de comandos utilizada para habilitar la GPU correctamente** en Windows con una GPU NVIDIA.
+
+---
+
+### 🔧 Requisitos previos
+
+- GPU NVIDIA compatible con CUDA
+- Drivers NVIDIA actualizados
+- Python **3.11**
+- Gestor de entornos: **uv**
+- Sistema operativo: **Windows**
+
+---
+### Instalar PyTorch con soporte CUDA (cu129)
+
+```powershell
+uv pip install torch==2.8.0 torchvision==0.23.0 torchaudio==2.8.0 `
+  --index-url https://download.pytorch.org/whl/cu129
+```
+
+### 🧪 Verificar GPU disponible
+
+```powershell
+python .\gpu_use_test.py
+```
 
 ---
 
