@@ -46,6 +46,7 @@ ParkVision/
 │
 ├── src/
 │   ├── db/
+│   │   ├── db.py               # Inicialización de comunicación con BD
 │   │   ├── init_db.py          # Inicialización de la BD
 │   │   └── models.py           # Operaciones CRUD
 │   │
@@ -65,27 +66,161 @@ ParkVision/
 
 ## 🗄️ Base de datos (actual)
 
-La base de datos utiliza **SQLite** y contiene las siguientes tablas:
+### Entity-Relationship Diagram
 
-### `estado_actual`
+![ERD](media/ERD.png)
 
-Estado actual de cada plaza.
+ParkVision utiliza una base de datos relacional compatible con **SQLite** y **PostgreSQL**, diseñada para soportar:
 
-* `plaza_id`
-* `ocupada` (0 / 1)
-* `last_update`
+- Gestión de parqueaderos
+- Usuarios administrativos y operadores
+- Conductores (reservas con cédula)
+- Plazas de estacionamiento
+- Estado en tiempo real
+- Historial de ocupación
+- Reservas con QR
+- Auditoría completa de eventos
 
-### `sesiones`
+---
 
-Historial de ocupación real.
+### 🧱 Diagrama lógico (resumen)
 
-* `id`
-* `plaza_id`
-* `inicio`
-* `fin`
-* `duracion_segundos`
+- **Un Parking** tiene:
+  - muchos `users`
+  - muchos `parking_spots`
 
-👉 Cada sesión corresponde a **una ocupación real**, sin rebotes ni duplicados.
+- **Un User** pertenece a:
+  - un solo `parking`
+
+- **Un Parking Spot**:
+  - pertenece a un `parking`
+  - tiene un único `parking_spot_state`
+  - puede tener muchas `occupancy_sessions`
+  - puede tener muchas `reservations`
+
+- **Un Driver**:
+  - puede realizar múltiples `reservations`
+  - se identifica por su **número de cédula**
+
+---
+
+### 📌 Tablas principales
+
+#### 1️⃣ `parkings`
+Entidad raíz del sistema.
+
+| Campo | Descripción |
+|-----|------------|
+| id | Identificador del parking |
+| name | Nombre del parqueadero |
+| address | Dirección física |
+| total_spots | Número total de plazas |
+| created_at | Fecha de creación |
+
+---
+
+#### 2️⃣ `users`
+Usuarios administrativos y operadores.
+
+| Campo | Descripción |
+|-----|------------|
+| id | Identificador del usuario |
+| parking_id | Parking al que pertenece |
+| username | Nombre de usuario (único) |
+| password_hash | Hash de contraseña |
+| role | `ADMIN` o `OPERATOR` |
+| created_at | Fecha de creación |
+
+👉 Cada usuario pertenece a **un solo parking**.
+
+---
+
+#### 3️⃣ `drivers`
+Usuarios finales que realizan reservas.
+
+| Campo | Descripción |
+|-----|------------|
+| id | Identificador del conductor |
+| cedula | Número de cédula (único) |
+| full_name | Nombre completo |
+| phone | Teléfono |
+| email | Correo |
+| created_at | Fecha de registro |
+
+---
+
+#### 4️⃣ `parking_spots`
+Plazas físicas de estacionamiento.
+
+| Campo | Descripción |
+|-----|------------|
+| id | Identificador de la plaza |
+| parking_id | Parking al que pertenece |
+| code | Código interno (ej. P1, P2) |
+| is_active | Plaza activa/inactiva |
+
+👉 Una plaza pertenece a **un solo parking**.
+
+---
+
+#### 5️⃣ `parking_spot_state`
+Estado **en tiempo real** de cada plaza.
+
+| Estado | Significado |
+|------|-------------|
+| FREE | Plaza libre |
+| RESERVED | Plaza reservada |
+| OCCUPIED | Plaza ocupada |
+
+✔️ Existe **una sola fila por plaza**.
+
+---
+
+#### 6️⃣ `occupancy_sessions`
+Histórico de ocupación (visión, QR o manual).
+
+| Campo | Descripción |
+|-----|------------|
+| id | Identificador |
+| spot_id | Plaza |
+| started_at | Inicio de ocupación |
+| ended_at | Fin (NULL si sigue activa) |
+| duration_seconds | Duración |
+| source | `VISION`, `QR`, `MANUAL` |
+
+👉 Base para **analítica**, **mapas de calor** y métricas.
+
+---
+
+#### 7️⃣ `reservations`
+Reservas realizadas por conductores usando QR.
+
+| Campo | Descripción |
+|-----|------------|
+| id | Identificador |
+| spot_id | Plaza reservada |
+| driver_id | Conductor |
+| qr_code | Código QR (único) |
+| reserved_at | Fecha de reserva |
+| expires_at | Expiración |
+| confirmed_at | Confirmación |
+| cancelled_at | Cancelación |
+| status | `ACTIVE`, `CONFIRMED`, `EXPIRED`, `CANCELLED` |
+
+---
+
+#### 8️⃣ `events`
+Auditoría y trazabilidad completa del sistema.
+
+| Campo | Descripción |
+|-----|------------|
+| id | Identificador |
+| spot_id | Plaza (opcional) |
+| event_type | Tipo de evento |
+| created_at | Fecha |
+| metadata | JSON con información adicional |
+
+👉 Registra **todo lo que ocurre** (ocupaciones, reservas, expiraciones, etc.).
 
 ---
 
@@ -145,7 +280,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 ```
 
 
-#### 4. Instalar dependencias base del proyecto
+### 4. Instalar dependencias base del proyecto
 
 ```powershell
 uv sync
