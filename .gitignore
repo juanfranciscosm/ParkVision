@@ -109,3 +109,13 @@ Parkvision/**/recordings/
 *.zip
 *.rar
 *.7z
+
+# Videos / resultados pesados
+**/*.mp4
+**/*.avi
+**/*.mov
+**/*.mkv
+
+# (opcional) si quieres ser más específico:
+ParkVision/results/
+ParkVision/media/
