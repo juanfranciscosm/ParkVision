@@ -1,0 +1,13 @@
+[project]
+name = "parkvision"
+version = "0.1.0"
+description = "Sistema de gestión de estacionamiento con visión por computadora"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "opencv-python>=4.8",
+    "numpy>=1.26",
+    "shapely>=2.1.2",
+    "ultralytics>=8.3.247",
+    "requests>=2.31",
+]

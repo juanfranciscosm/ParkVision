@@ -1,0 +1,111 @@
+# =========================
+# OS / Editor
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Logs / temporales
+# =========================
+*.log
+logs/
+tmp/
+temp/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Variables de entorno / secretos
+# =========================
+.env
+.env.*
+!.env.example
+!.env.sample
+
+*.pem
+*.key
+
+# =========================
+# Node (backend + frontend)
+# =========================
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+**/.cache/
+**/.parcel-cache/
+**/.eslintcache
+**/*.tsbuildinfo
+
+# =========================
+# Python / UV / venv
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+env/
+ENV/
+__pypackages__/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# =========================
+# SQLite (runtime)
+# =========================
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/*-wal
+**/*-shm
+
+# =========================
+# Computer Vision: datasets / salidas generadas
+# (ajusta estos paths a tu estructura real)
+# =========================
+Parkvision/dataset/
+Parkvision/**/dataset/
+Parkvision/**/runs/
+Parkvision/**/outputs/
+Parkvision/**/captures/
+Parkvision/**/recordings/
+
+# =========================
+# PlatformIO (ESP32)
+# =========================
+**/.pio/
+**/.pioenvs/
+**/.piolibdeps/
+
+# =========================
+# Proteus (deja el proyecto, ignora backups/basura)
+# =========================
+**/*.bak
+**/*.tmp
+**/*.lck
+**/*.~*
+**/*.pdsbak
+**/*.pds~
+**/*.dwl
+**/*.dwl2
+
+# =========================
+# Comprimidos grandes (opcional)
+# =========================
+*.zip
+*.rar
+*.7z
